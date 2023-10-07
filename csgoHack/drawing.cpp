@@ -42,3 +42,16 @@ void DrawEspBox2D(Vec2 top, Vec2 bot, int thickness, D3DCOLOR color) {
 	DrawLine(tl, bl, thickness, color);
 	DrawLine(tr, br, thickness, color);
 }
+
+void DrawText(const char* text, float x, float y, D3DCOLOR color) {
+	RECT rect;
+
+	if (!hack->FontF)
+		D3DXCreateFont(pDevice, 14, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Arial", &hack->FontF);
+
+	SetRect(&rect, x + 1, y + 1, x + 1, y + 1);
+	hack->FontF->DrawTextA(NULL, text, -1, &rect, DT_CENTER | DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 0, 0));
+
+	SetRect(&rect, x, y, x, y);
+	hack->FontF->DrawTextA(NULL, text, -1, &rect, DT_CENTER | DT_NOCLIP, color);
+}
