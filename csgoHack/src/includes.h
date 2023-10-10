@@ -12,3 +12,7 @@
 #include "hook.h"
 #include "hack.h"
 #include "drawing.h"
+
+#include "aimbot.h"
+//#include "ents.h"
+//#include "geom.h"

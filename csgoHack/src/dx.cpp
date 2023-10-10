@@ -1,5 +1,4 @@
-#include "pch.h"
-#include "includes.h"
+#include "dx.h"
 
 // window height and width
 int windowHeight, windowWidth;

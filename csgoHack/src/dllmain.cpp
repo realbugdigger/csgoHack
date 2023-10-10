@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "includes.h"
 #include <sstream>
 #include <string.h>
@@ -31,7 +30,9 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 		DrawText("Statusbars		[NUMPAD 3]", menuOffX, menuOffY + 3 * 12, hack->settings.status ? enabled : disabled);
 		DrawText("Status Text		[NUMPAD 4]", menuOffX, menuOffY + 4 * 12, hack->settings.statusText ? enabled : disabled);
 		DrawText("Recoil crosshair	[NUMPAD 5]", menuOffX, menuOffY + 5 * 12, hack->settings.rcsCrosshair ? enabled : disabled);
-		DrawText("Hide Menu			(INS)",		 menuOffX, menuOffY + 6 * 12, D3DCOLOR_ARGB(255, 255, 255, 255));
+		DrawText("Aimbot			[NUMPAD 6]", menuOffX, menuOffY + 6 * 12, hack->settings.aimbot ? enabled : disabled);
+		DrawText("Triggerbot		[NUMPAD 7]", menuOffX, menuOffY + 7 * 12, hack->settings.triggerbot ? enabled : disabled);
+		DrawText("Hide Menu			(INS)",		 menuOffX, menuOffY + 8 * 12, D3DCOLOR_ARGB(255, 255, 255, 255));
 	}
 
 
@@ -96,9 +97,9 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 
 				if (hack->settings.statusText) {
 					std::string t1 = "RandomNameForNow";
-					char* healthMsg = (char*)t1.c_str();
+					char* name = (char*)t1.c_str();
 
-					DrawText(healthMsg, entPos2D.x, entPos2D.y, D3DCOLOR_ARGB(255, 255, 255, 255));
+					DrawText(name, entPos2D.x, entPos2D.y, D3DCOLOR_ARGB(255, 255, 255, 255));
 				}
 			}
 		}
@@ -118,6 +119,10 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 
 		DrawLine(l, r, 2, hack->color.crosshair);
 		DrawLine(t, b, 2, hack->color.crosshair);
+	}
+
+	if (hack->settings.aimbot) {
+		Aimbot();
 	}
 
 	// call og function

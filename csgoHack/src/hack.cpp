@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "includes.h"
 
 Hack::~Hack() {
@@ -9,12 +8,14 @@ Hack::~Hack() {
 void Hack::Init() {
 	client = (uintptr_t)GetModuleHandle(L"client.dll");
 	engine = (uintptr_t)GetModuleHandle(L"engine.dll");
+
 	entList = (EntList*)(client + dwEntityList);
 	localEnt = entList->ents[0].ent;
 }
 
 void Hack::Update() {
 	memcpy(&viewMatrix, (PBYTE*)(client + dwViewMatrix), sizeof(viewMatrix));
+
 	this->CheckButtons();
 }
 
@@ -31,7 +32,10 @@ void Hack::CheckButtons() {
 		settings.statusText = !settings.statusText;
 	if (GetAsyncKeyState(button.rcsCrosshairBtn) & 1)
 		settings.rcsCrosshair = !settings.rcsCrosshair;
-
+	if (GetAsyncKeyState(button.aimbotBtn) & 1)
+		settings.aimbot = !settings.aimbot;
+	if (GetAsyncKeyState(button.triggerbotBtn) & 1)
+		settings.triggerbot = !settings.triggerbot;
 }
 
 bool Hack::CheckValidEnt(Ent* ent) {

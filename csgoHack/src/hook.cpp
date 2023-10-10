@@ -1,7 +1,4 @@
-#include "pch.h"
-#include "includes.h"
-
-// hooking functions by rake and solair
+#include "hook.h"
 
 // patch bytes function
 void Patch(BYTE* dst, BYTE* src, unsigned int size) {

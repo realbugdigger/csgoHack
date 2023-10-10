@@ -1,5 +1,5 @@
 #pragma once
-//https://guidedhacking.com/threads/ezp1z1s-csgo-direct3d9-hooking-esp-tutorial-series.14570/
+#include "includes.h"
 
 void Patch(BYTE* dst, BYTE* src, unsigned int size);
 
