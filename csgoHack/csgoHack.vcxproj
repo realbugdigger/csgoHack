@@ -106,6 +106,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -123,6 +124,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,6 +142,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,6 +160,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,24 +171,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\aimbot.h" />
-    <ClInclude Include="src\csgo.hpp" />
-    <ClInclude Include="src\drawing.h" />
-    <ClInclude Include="src\dx.h" />
-    <ClInclude Include="src\ents.h" />
-    <ClInclude Include="src\framework.h" />
-    <ClInclude Include="src\geom.h" />
-    <ClInclude Include="src\hack.h" />
-    <ClInclude Include="src\hook.h" />
-    <ClInclude Include="src\includes.h" />
+    <ClInclude Include="src\core\aimbot.h" />
+    <ClInclude Include="src\util\csgo.hpp" />
+    <ClInclude Include="src\core\drawing.h" />
+    <ClInclude Include="src\core\dx.h" />
+    <ClInclude Include="src\core\ents.h" />
+    <ClInclude Include="src\core\framework.h" />
+    <ClInclude Include="src\core\geom.h" />
+    <ClInclude Include="src\core\hack.h" />
+    <ClInclude Include="src\core\hook.h" />
+    <ClInclude Include="src\core\includes.h" />
+    <ClInclude Include="src\valve\csgosdk.h" />
+    <ClInclude Include="src\valve\csgotrace.h" />
+    <ClInclude Include="src\valve\csgoVector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Aimbot.cpp" />
-    <ClCompile Include="src\dllmain.cpp" />
-    <ClCompile Include="src\drawing.cpp" />
-    <ClCompile Include="src\dx.cpp" />
-    <ClCompile Include="src\hack.cpp" />
-    <ClCompile Include="src\hook.cpp" />
+    <ClCompile Include="src\core\Aimbot.cpp" />
+    <ClCompile Include="src\core\dllmain.cpp" />
+    <ClCompile Include="src\core\drawing.cpp" />
+    <ClCompile Include="src\core\dx.cpp" />
+    <ClCompile Include="src\core\hack.cpp" />
+    <ClCompile Include="src\core\hook.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

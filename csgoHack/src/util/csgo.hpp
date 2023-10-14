@@ -2,10 +2,10 @@
 #include <cstdint>
 #include <cstddef>
 
-// 2023-10-09 12:42:25.265847800 UTC
+// 2023-10-10 17:35:45.135336300 UTC
 
 namespace hazedumper {
-	constexpr ::std::int64_t timestamp = 1696855345;
+	constexpr ::std::int64_t timestamp = 1696959345;
 	namespace netvars {
 		constexpr ::std::ptrdiff_t cs_gamerules_data = 0x0;
 		constexpr ::std::ptrdiff_t m_ArmorValue = 0x117CC;
@@ -101,40 +101,40 @@ namespace hazedumper {
 		constexpr ::std::ptrdiff_t dwClientState_MaxPlayer = 0x388;
 		constexpr ::std::ptrdiff_t dwClientState_PlayerInfo = 0x52C0;
 		constexpr ::std::ptrdiff_t dwClientState_State = 0x108;
-		constexpr ::std::ptrdiff_t dwEntityList = 0x4E0102C;
-		constexpr ::std::ptrdiff_t dwForceAttack = 0x322EE98;
-		constexpr ::std::ptrdiff_t dwForceAttack2 = 0x322EEA4;
-		constexpr ::std::ptrdiff_t dwForceBackward = 0x322EEE0;
-		constexpr ::std::ptrdiff_t dwForceForward = 0x322EED4;
-		constexpr ::std::ptrdiff_t dwForceJump = 0x52BCD88;
-		constexpr ::std::ptrdiff_t dwForceLeft = 0x322EE50;
-		constexpr ::std::ptrdiff_t dwForceRight = 0x322EE5C;
+		constexpr ::std::ptrdiff_t dwEntityList = 0x4E051DC;
+		constexpr ::std::ptrdiff_t dwForceAttack = 0x3233024;
+		constexpr ::std::ptrdiff_t dwForceAttack2 = 0x3233030;
+		constexpr ::std::ptrdiff_t dwForceBackward = 0x3233078;
+		constexpr ::std::ptrdiff_t dwForceForward = 0x323306C;
+		constexpr ::std::ptrdiff_t dwForceJump = 0x52C0F50;
+		constexpr ::std::ptrdiff_t dwForceLeft = 0x3233084;
+		constexpr ::std::ptrdiff_t dwForceRight = 0x3233090;
 		constexpr ::std::ptrdiff_t dwGameDir = 0x63AE00;
-		constexpr ::std::ptrdiff_t dwGameRulesProxy = 0x5330594;
-		constexpr ::std::ptrdiff_t dwGetAllClasses = 0xE0CFA4;
+		constexpr ::std::ptrdiff_t dwGameRulesProxy = 0x5334764;
+		constexpr ::std::ptrdiff_t dwGetAllClasses = 0xE10F84;
 		constexpr ::std::ptrdiff_t dwGlobalVars = 0x59EE60;
-		constexpr ::std::ptrdiff_t dwGlowObjectManager = 0x535BAD0;
-		constexpr ::std::ptrdiff_t dwInput = 0x525E600;
-		constexpr ::std::ptrdiff_t dwInterfaceLinkList = 0x99CF84;
-		constexpr ::std::ptrdiff_t dwLocalPlayer = 0xDEB99C;
-		constexpr ::std::ptrdiff_t dwMouseEnable = 0x523A260;
-		constexpr ::std::ptrdiff_t dwMouseEnablePtr = 0x523A230;
-		constexpr ::std::ptrdiff_t dwPlayerResource = 0x322D1D0;
-		constexpr ::std::ptrdiff_t dwRadarBase = 0x5237B04;
+		constexpr ::std::ptrdiff_t dwGlowObjectManager = 0x535FCB8;
+		constexpr ::std::ptrdiff_t dwInput = 0x52627B0;
+		constexpr ::std::ptrdiff_t dwInterfaceLinkList = 0x99F7D4;
+		constexpr ::std::ptrdiff_t dwLocalPlayer = 0xDEF97C;
+		constexpr ::std::ptrdiff_t dwMouseEnable = 0x523E410;
+		constexpr ::std::ptrdiff_t dwMouseEnablePtr = 0x523E3E0;
+		constexpr ::std::ptrdiff_t dwPlayerResource = 0x3231380;
+		constexpr ::std::ptrdiff_t dwRadarBase = 0x523BCB4;
 		constexpr ::std::ptrdiff_t dwSetClanTag = 0x8DAB0;
-		constexpr ::std::ptrdiff_t dwViewMatrix = 0x4DF1E74;
-		constexpr ::std::ptrdiff_t dwWeaponTable = 0x525F6DC;
+		constexpr ::std::ptrdiff_t dwViewMatrix = 0x4DF6024;
+		constexpr ::std::ptrdiff_t dwWeaponTable = 0x526388C;
 		constexpr ::std::ptrdiff_t dwWeaponTableIndex = 0x326C;
 		constexpr ::std::ptrdiff_t dwbSendPackets = 0xDD2D2;
 		constexpr ::std::ptrdiff_t dwppDirect3DDevice9 = 0xA62C0;
-		constexpr ::std::ptrdiff_t force_update_spectator_glow = 0x3DB90A;
+		constexpr ::std::ptrdiff_t force_update_spectator_glow = 0x3DD09A;
 		constexpr ::std::ptrdiff_t interface_engine_cvar = 0x3FA9C;
-		constexpr ::std::ptrdiff_t is_c4_owner = 0x3E9120;
+		constexpr ::std::ptrdiff_t is_c4_owner = 0x3EA8A0;
 		constexpr ::std::ptrdiff_t m_bDormant = 0xED;
 		constexpr ::std::ptrdiff_t m_pStudioHdr = 0x2950;
-		constexpr ::std::ptrdiff_t m_pitchClassPtr = 0x523A158;
+		constexpr ::std::ptrdiff_t m_pitchClassPtr = 0x523E308;
 		constexpr ::std::ptrdiff_t model_ambient_min = 0x5A1194;
-		constexpr ::std::ptrdiff_t set_abs_angles = 0x1E8FC0;
-		constexpr ::std::ptrdiff_t set_abs_origin = 0x1E8E00;
+		constexpr ::std::ptrdiff_t set_abs_angles = 0x1EA950;
+		constexpr ::std::ptrdiff_t set_abs_origin = 0x1EA790;
 	} // namespace signatures
 } // namespace hazedumper

@@ -24,54 +24,63 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\drawing.h">
+    <ClInclude Include="src\core\drawing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\dx.h">
+    <ClInclude Include="src\core\dx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\framework.h">
+    <ClInclude Include="src\core\framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\hack.h">
+    <ClInclude Include="src\core\hack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\hook.h">
+    <ClInclude Include="src\core\hook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\includes.h">
+    <ClInclude Include="src\core\includes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\aimbot.h">
+    <ClInclude Include="src\core\aimbot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\csgo.hpp">
+    <ClInclude Include="src\util\csgo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ents.h">
+    <ClInclude Include="src\core\ents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geom.h">
+    <ClInclude Include="src\core\geom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\valve\csgotrace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\valve\csgoVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\valve\csgosdk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\dllmain.cpp">
+    <ClCompile Include="src\core\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\drawing.cpp">
+    <ClCompile Include="src\core\drawing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\dx.cpp">
+    <ClCompile Include="src\core\dx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\hack.cpp">
+    <ClCompile Include="src\core\hack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\hook.cpp">
+    <ClCompile Include="src\core\hook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Aimbot.cpp">
+    <ClCompile Include="src\core\Aimbot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

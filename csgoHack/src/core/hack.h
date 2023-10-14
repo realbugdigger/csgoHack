@@ -61,7 +61,7 @@ public:
 		// m_bSpotted
 		DEFINE_MEMBER_N(bool, m_bSpotted, 0x93D);
 		// boneMatrix
-		DEFINE_MEMBER_N(int, boneMatrix, 0x26A8); // proveri jos jednom
+		DEFINE_MEMBER_N(int, boneMatrix, 0x26A8);
 		// aimPunchAngle
 		DEFINE_MEMBER_N(Vec3, aimPunchAngle, 0x303C);
 		// armorValue
@@ -128,8 +128,8 @@ public:
 
 class Hack {
 public:
-	uintptr_t dwEntityList = 0x4E0102C;
-	uintptr_t dwViewMatrix = 0x4DF1E74;
+	uintptr_t dwEntityList = 0x4E051DC;
+	uintptr_t dwViewMatrix = 0x4DF6024;
 
 	uintptr_t engine;
 	uintptr_t client;
