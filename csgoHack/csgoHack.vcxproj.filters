@@ -63,6 +63,9 @@
     <ClInclude Include="src\valve\csgosdk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\dllmain.cpp">

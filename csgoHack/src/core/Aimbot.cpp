@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "aimbot.h"
 
 #include "../valve/csgosdk.h"
@@ -86,5 +88,30 @@ void Aimbot() {
 	{
 		Vec3 temp = hack->GetBonePos(closestEnemy, 8);
 		hack->localEnt->AimAt( &temp );
+	}
+}
+
+void Triggerbot() {
+	uintptr_t* localEntPtr = (uintptr_t*)(clientdll + 0xDEF97C);
+	uintptr_t localEnt = *localEntPtr;
+	int crosshairId = *(int*)(localEnt + 0x11838);
+
+	if (crosshairId <= 64 && crosshairId != 0)
+	{
+		uintptr_t crossHairEnt = *(uintptr_t*)(clientdll + 0x4E051DC + (crosshairId - 1) * 0x10);
+
+		if (crossHairEnt)
+		{
+			int crosshairTeam = *(int*)(crossHairEnt + 0xF4);
+			int crosshairLifeState = *(int*)(crossHairEnt + 0x25F);
+
+			if ((hack->localEnt->iTeamNum != crosshairTeam) && (crosshairLifeState == 0))
+			{
+				*(int*)(clientdll + 0x3233024) = 5;
+				std::this_thread::sleep_for(std::chrono::milliseconds(30));
+				*(int*)(clientdll + 0x3233024) = 4;
+			}
+			else *(int*)(clientdll + 0x3233024) = 4;
+		}
 	}
 }

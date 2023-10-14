@@ -125,6 +125,10 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 		Aimbot();
 	}
 
+	if (hack->settings.triggerbot) {
+		Triggerbot();
+	}
+
 	// call og function
 	oEndScene(pDevice);
 }

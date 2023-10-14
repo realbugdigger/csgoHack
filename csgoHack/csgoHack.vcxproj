@@ -181,6 +181,7 @@
     <ClInclude Include="src\core\hack.h" />
     <ClInclude Include="src\core\hook.h" />
     <ClInclude Include="src\core\includes.h" />
+    <ClInclude Include="src\util\memory.h" />
     <ClInclude Include="src\valve\csgosdk.h" />
     <ClInclude Include="src\valve\csgotrace.h" />
     <ClInclude Include="src\valve\csgoVector.h" />
