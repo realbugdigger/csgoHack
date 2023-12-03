@@ -1,7 +1,7 @@
 # Csgo game hack
 
 1. Build the hack with visual studio.
-2. To run the hack use some dll injector like [GH Injector]() 
+2. To run the hack use some dll injector like [GH Injector](https://github.com/guided-hacking/GuidedHacking-Injector) 
 
 ![game screenshot](https://github.com/realbugdigger/csgoHack/blob/master/csgo_ss1.png)
 
