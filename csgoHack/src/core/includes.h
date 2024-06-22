@@ -2,6 +2,11 @@
 
 #include <Windows.h>
 
+#include <atomic>
+
+static std::atomic<bool> existsWorkingThread(false);
+static std::atomic<bool> enemyInSight(false);
+
 #include <d3d9.h>
 #include <d3dx9.h>
 

@@ -1,4 +1,9 @@
 #pragma once
+#include <random>
+#include <thread>
+#include <iostream>
+
+#include "includes.h"
 
 #define STR_MERGE_IMPL(a, b) a##b
 #define STR_MERGE(a, b) STR_MERGE_IMPL(a, b)
@@ -68,6 +73,97 @@ public:
 		DEFINE_MEMBER_N(int, ArmorValue, 0x117CC);
 	};
 
+private:
+	// p0 - start view angles
+	// p1 - middle point or random point
+	// p2 - final view angles
+	POINT CalculateBezierPoint(const float t, const POINT p0, const POINT p1, const POINT p2)
+	{
+		const float u{ 1 - t };
+		const float tt{ t * t };
+		const float uu{ u * u };
+
+		POINT p{ 0, 0 };
+		p.x = static_cast<float>(uu * p0.x + 2 * u * t * p1.x + tt * p2.x);
+		p.y = static_cast<float>(uu * p0.y + 2 * u * t * p1.y + tt * p2.y);
+
+		return p;
+	}
+
+	void DoWork(Vec3* target) {
+		std::cout << "[!!!] New Thread Started\n";
+
+		static uintptr_t engineModule = (uintptr_t)GetModuleHandle(L"engine.dll");
+		//static Vec3* viewAngles = (Vec3*)(*(uint32_t*)(engineModule + hazedumper::signatures::dwClientState) + hazedumper::signatures::dwClientState_ViewAngles);
+		static Vec3* viewAngles = (Vec3*)(*(uintptr_t*)(engineModule + 0x59F19C) + 0x4D90);
+
+		Vec3 origin = *GetOrigin();
+		Vec3 viewOffset = *GetViewOffset();
+		Vec3 tmp = origin + viewOffset;
+		Vec3* myPos = &(tmp);
+
+		// Calculate the distance from our head position to enemy head position (The Hypotenuse !!!!)
+		Vec3 deltaVec = { target->x - myPos->x, target->y - myPos->y, target->z - myPos->z };
+		float deltaVecLength = sqrt(deltaVec.x * deltaVec.x + deltaVec.y * deltaVec.y + deltaVec.z * deltaVec.z);
+
+		std::cout << "\t[INFO] Local player view angle: x,y,z = " << viewAngles->x << ", " << viewAngles->y << ", " << viewAngles->z << "\n";
+		std::cout << "\t[INFO] Enemy player head pos  : x,y,z = " << target->x << ", " << target->y << ", " << target->z << "\n";
+
+		// when we have degrees we have to multiply the value by (180 / PI) to get radians
+		// when we have radians we have to multiply the value by (PI / 180) to get degrees
+
+		// deltaVec.z - the height difference between our head and enemy head
+		float pitch = -asin(deltaVec.z / deltaVecLength) * (180 / PI);
+		float yaw = atan2f(deltaVec.y, deltaVec.x) * (180 / PI);
+
+		std::cout << "\t\t[***] Pitch: " << pitch << "\n";
+		std::cout << "\t\t[***] Yaw: " << yaw << "\n";
+
+		std::mt19937 gen{ std::random_device{}() };
+		std::uniform_int_distribution<int> dist{ -4, 4 };
+		int random_number = 0;
+		do {
+			random_number = dist(gen);
+		} while (random_number == 0);
+
+		if (pitch >= -89 && pitch <= 89 && yaw >= -180 && yaw <= 180)
+		{
+			constexpr int steps{ 20 }; // Number of steps for interpolation
+			constexpr int delayMs{ 3 }; // Delay in milliseconds between steps
+
+			const POINT startingPoint{viewAngles->x, viewAngles->y};
+			const POINT destinationPoint{ pitch, yaw };
+			const POINT midPoint{ startingPoint.x + (destinationPoint.x - startingPoint.x) / abs(random_number), destinationPoint.y + 3 * random_number };
+			//const POINT midPoint{ startingPoint.x + 100, startingPoint.y + 100 };
+
+			for (int i{ 0 }; i <= steps /*&& enemyInSight.load()*/; i++)
+			{
+				// 't' represents the interpolation parameter ranging from 0 to 1.
+				// It indicates the relative position between the start and end points:
+				// - At t = 0, the position is at the start.
+				// - At t = 1, the position is at the end.
+				// - At 0 < t < 1, the position is proportionally between the start and end.
+				float t{ static_cast<float>(i) / static_cast<float>(steps) };
+				//float t = i * 0.01;
+
+				const POINT bezierPoint{ CalculateBezierPoint(t, startingPoint, midPoint, destinationPoint) };
+
+				//const float newPitch{ viewAngles->x + static_cast<float>((pitch - viewAngles->x) * t) };
+				//const float newYaw{ viewAngles->y + static_cast<float>((yaw - viewAngles->y) * t) };
+				viewAngles->x = bezierPoint.x;
+				viewAngles->y = bezierPoint.y;
+
+				Sleep(delayMs);
+				//std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+			}
+
+			/*viewAngles->x = pitch;
+			viewAngles->y = yaw;*/
+		}
+		std::cout << "\t[*] One Thread finished execution\n";
+		existsWorkingThread.store(false);
+	}
+
 public:
 	Vec3* GetOrigin() {
 		//return (Vec3*)(*(uintptr_t*)this + hazedumper::netvars::m_vecOrigin);
@@ -82,25 +178,13 @@ public:
 	}
 
 	void AimAt(Vec3* target) {
-		static uintptr_t engineModule = (uintptr_t)GetModuleHandle(L"engine.dll");
-		//static Vec3* viewAngles = (Vec3*)(*(uint32_t*)(engineModule + hazedumper::signatures::dwClientState) + hazedumper::signatures::dwClientState_ViewAngles);
-		static Vec3* viewAngles = (Vec3*)(*(uintptr_t*)(engineModule + 0x59F19C) + 0x4D90);
-
-		Vec3 origin = *GetOrigin();
-		Vec3 viewOffset = *GetViewOffset();
-		Vec3 tmp = origin + viewOffset;
-		Vec3* myPos = &(tmp);
-
-		Vec3 deltaVec = { target->x - myPos->x, target->y - myPos->y, target->z - myPos->z };
-		float deltaVecLength = sqrt(deltaVec.x * deltaVec.x + deltaVec.y * deltaVec.y + deltaVec.z * deltaVec.z);
-
-		float pitch = -asin(deltaVec.z / deltaVecLength) * (180 / PI);
-		float yaw = atan2(deltaVec.y, deltaVec.x) * (180 / PI);
-
-		if (pitch >= -89 && pitch <= 89 && yaw >= -180 && yaw <= 180)
+		//DoWork(target);
+		//while (existsWorkingThread.load()) {}
+		if (existsWorkingThread.load() == false)
 		{
-			viewAngles->x = pitch;
-			viewAngles->y = yaw;
+			existsWorkingThread.store(true);
+			std::thread worker([this, target] { DoWork(target); });
+			worker.detach(); // Optionally detach the new threaded task if you're sure it will finish safely
 		}
 	}
 

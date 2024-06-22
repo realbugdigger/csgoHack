@@ -134,6 +134,13 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 }
 
 DWORD WINAPI HackThread(HMODULE hModule) {
+	//Create Debugging Console
+	AllocConsole();
+	FILE* f;
+	freopen_s(&f, "CONOUT$", "w", stdout);
+
+	std::cout << "[*] Debugging Console Started\n";
+
 	// hook
 	if (GetD3D9Device(d3d9Device, sizeof(d3d9Device))) {
 		memcpy(EndSceneBytes, (char*)d3d9Device[42], 7);
@@ -155,6 +162,9 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 
 	// unhook
 	Patch((BYTE*)d3d9Device[42], EndSceneBytes, 7);
+
+	fclose(f);
+	FreeConsole();
 
 	// uninject
 	FreeLibraryAndExitThread(hModule, 0);

@@ -86,8 +86,12 @@ void Aimbot() {
 
 	if (closestEnemy)
 	{
+		enemyInSight.store(true);
 		Vec3 temp = hack->GetBonePos(closestEnemy, 8);
 		hack->localEnt->AimAt( &temp );
+	}
+	else {
+		enemyInSight.store(false);
 	}
 }
 

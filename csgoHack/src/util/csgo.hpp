@@ -2,10 +2,10 @@
 #include <cstdint>
 #include <cstddef>
 
-// 2023-10-10 17:35:45.135336300 UTC
+// 2024-06-20 14:57:08.738356100 UTC
 
 namespace hazedumper {
-	constexpr ::std::int64_t timestamp = 1696959345;
+	constexpr ::std::int64_t timestamp = 1718895428;
 	namespace netvars {
 		constexpr ::std::ptrdiff_t cs_gamerules_data = 0x0;
 		constexpr ::std::ptrdiff_t m_ArmorValue = 0x117CC;
