@@ -87,8 +87,8 @@ void Aimbot() {
 	if (closestEnemy)
 	{
 		enemyInSight.store(true);
-		Vec3 temp = hack->GetBonePos(closestEnemy, 8);
-		hack->localEnt->AimAt( &temp );
+		const auto temp = std::make_shared<Vec3>(hack->GetBonePos(closestEnemy, 8));
+		hack->localEnt->AimAt(temp);
 	}
 	else {
 		enemyInSight.store(false);

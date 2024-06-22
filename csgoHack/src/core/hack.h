@@ -90,7 +90,7 @@ private:
 		return p;
 	}
 
-	void DoWork(Vec3* target) {
+	void DoWork(std::shared_ptr<Vec3> target) {
 		std::cout << "[!!!] New Thread Started\n";
 
 		static uintptr_t engineModule = (uintptr_t)GetModuleHandle(L"engine.dll");
@@ -119,23 +119,22 @@ private:
 		std::cout << "\t\t[***] Pitch: " << pitch << "\n";
 		std::cout << "\t\t[***] Yaw: " << yaw << "\n";
 
-		std::mt19937 gen{ std::random_device{}() };
+		/*std::mt19937 gen{ std::random_device{}() };
 		std::uniform_int_distribution<int> dist{ -4, 4 };
 		int random_number = 0;
 		do {
 			random_number = dist(gen);
-		} while (random_number == 0);
+		} while (random_number == 0);*/
 
 		if (pitch >= -89 && pitch <= 89 && yaw >= -180 && yaw <= 180)
 		{
-			constexpr int steps{ 20 }; // Number of steps for interpolation
+			constexpr int steps{ 50 }; // Number of steps for interpolation
 			constexpr int delayMs{ 3 }; // Delay in milliseconds between steps
 
-			const POINT startingPoint{viewAngles->x, viewAngles->y};
+			/*const POINT startingPoint{viewAngles->x, viewAngles->y};
 			const POINT destinationPoint{ pitch, yaw };
-			const POINT midPoint{ startingPoint.x + (destinationPoint.x - startingPoint.x) / abs(random_number), destinationPoint.y + 3 * random_number };
-			//const POINT midPoint{ startingPoint.x + 100, startingPoint.y + 100 };
-
+			const POINT midPoint{ startingPoint.x + (destinationPoint.x - startingPoint.x) / abs(random_number), destinationPoint.y + 3 * random_number };*/
+			
 			for (int i{ 0 }; i <= steps /*&& enemyInSight.load()*/; i++)
 			{
 				// 't' represents the interpolation parameter ranging from 0 to 1.
@@ -146,12 +145,15 @@ private:
 				float t{ static_cast<float>(i) / static_cast<float>(steps) };
 				//float t = i * 0.01;
 
-				const POINT bezierPoint{ CalculateBezierPoint(t, startingPoint, midPoint, destinationPoint) };
+				//const POINT bezierPoint{ CalculateBezierPoint(t, startingPoint, midPoint, destinationPoint) };
 
-				//const float newPitch{ viewAngles->x + static_cast<float>((pitch - viewAngles->x) * t) };
-				//const float newYaw{ viewAngles->y + static_cast<float>((yaw - viewAngles->y) * t) };
-				viewAngles->x = bezierPoint.x;
-				viewAngles->y = bezierPoint.y;
+				const float newPitch{ viewAngles->x + static_cast<float>((pitch - viewAngles->x) * t) };
+				const float newYaw{ viewAngles->y + static_cast<float>((yaw - viewAngles->y) * t) };
+				viewAngles->x = newPitch;
+				viewAngles->y = newYaw;
+
+				//viewAngles->x = bezierPoint.x;
+				//viewAngles->y = bezierPoint.y;
 
 				Sleep(delayMs);
 				//std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
@@ -177,7 +179,7 @@ public:
 		return &m_vecViewOffset;
 	}
 
-	void AimAt(Vec3* target) {
+	void AimAt(std::shared_ptr<Vec3> target) {
 		//DoWork(target);
 		//while (existsWorkingThread.load()) {}
 		if (existsWorkingThread.load() == false)
