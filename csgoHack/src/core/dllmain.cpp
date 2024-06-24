@@ -33,7 +33,8 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 		DrawText("Recoil crosshair	[NUMPAD 5]", menuOffX, menuOffY + 5 * 12, hack->settings.rcsCrosshair ? enabled : disabled);
 		DrawText("Aimbot			[NUMPAD 6]", menuOffX, menuOffY + 6 * 12, hack->settings.aimbot ? enabled : disabled);
 		DrawText("Triggerbot		[NUMPAD 7]", menuOffX, menuOffY + 7 * 12, hack->settings.triggerbot ? enabled : disabled);
-		DrawText("Hide Menu			(INS)",		 menuOffX, menuOffY + 8 * 12, D3DCOLOR_ARGB(255, 255, 255, 255));
+		DrawText("Bone Esp			[NUMPAD 8]", menuOffX, menuOffY + 8 * 12, hack->settings.boneEsp ? enabled : disabled);
+		DrawText("Hide Menu			(INS)",		 menuOffX, menuOffY + 9 * 12, D3DCOLOR_ARGB(255, 255, 255, 255));
 	}
 
 
@@ -102,6 +103,10 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 
 					DrawText(name, entPos2D.x, entPos2D.y, D3DCOLOR_ARGB(255, 255, 255, 255));
 				}
+
+				if (hack->settings.boneEsp) {
+					DrawBoneEsp(curEnt, espColor);
+				}
 			}
 		}
 	}
@@ -138,9 +143,9 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	globalPosPtr = std::make_shared<Vec3>();
 
 	//Create Debugging Console
-	AllocConsole();
-	FILE* f;
-	freopen_s(&f, "CONOUT$", "w", stdout);
+	//AllocConsole();
+	//FILE* f;
+	//freopen_s(&f, "CONOUT$", "w", stdout);
 
 	std::cout << "[*] Debugging Console Started\n";
 
@@ -166,8 +171,8 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	// unhook
 	Patch((BYTE*)d3d9Device[42], EndSceneBytes, 7);
 
-	fclose(f);
-	FreeConsole();
+	//fclose(f);
+	//FreeConsole();
 
 	// uninject
 	FreeLibraryAndExitThread(hModule, 0);

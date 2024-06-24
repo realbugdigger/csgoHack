@@ -36,6 +36,8 @@ void Hack::CheckButtons() {
 		settings.aimbot = !settings.aimbot;
 	if (GetAsyncKeyState(button.triggerbotBtn) & 1)
 		settings.triggerbot = !settings.triggerbot;
+	if (GetAsyncKeyState(button.boneEspBtn) & 1)
+		settings.boneEsp = !settings.boneEsp;
 }
 
 bool Hack::CheckValidEnt(Ent* ent) {

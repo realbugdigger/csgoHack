@@ -282,6 +282,7 @@ public:
 		bool rcsCrosshair = false;
 		bool aimbot = false;
 		bool triggerbot = false;
+		bool boneEsp = false;
 	} settings;
 
 	struct Buttons {
@@ -293,6 +294,7 @@ public:
 		DWORD rcsCrosshairBtn = VK_NUMPAD5;
 		DWORD aimbotBtn = VK_NUMPAD6;
 		DWORD triggerbotBtn = VK_NUMPAD7;
+		DWORD boneEspBtn = VK_NUMPAD8;
 	} button;
 
 	struct Colors {

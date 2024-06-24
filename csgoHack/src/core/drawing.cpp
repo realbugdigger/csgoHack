@@ -1,3 +1,5 @@
+#pragma warning( disable : 4996)
+
 #include "includes.h"
 
 extern Hack* hack;
@@ -40,6 +42,68 @@ void DrawEspBox2D(Vec2 top, Vec2 bot, int thickness, D3DCOLOR color) {
 	DrawLine(bl, br, thickness, color);
 	DrawLine(tl, bl, thickness, color);
 	DrawLine(tr, br, thickness, color);
+}
+
+void drawBone(Vec3 Bone1, Vec3 Bone2, D3DCOLOR color) {
+	Vec2 vScreenBone1;
+	Vec2 vScreenBone2;
+	if (hack->WorldToScreen(Bone1, vScreenBone1))
+	{
+		if (hack->WorldToScreen(Bone2, vScreenBone2))
+		{
+			DrawLine(vScreenBone1.x, vScreenBone1.y, vScreenBone2.x, vScreenBone2.y, 3, color);
+			//Drawing::Line(vScreenBone1.x, vScreenBone1.y, vScreenBone2.x, vScreenBone2.y, D3DCOLOR_ARGB(BoneColorA, BoneColorR, BoneColorG, BoneColorB));
+		}
+	}
+}
+
+void DrawBoneEsp(Ent* ent, D3DCOLOR color) {
+	//std::cout << "[!!!] Drawing ?!?!?!?!?!\n";
+	//DrawString(Bonename, vScreenBone.x, vScreenBone.y, 255, 255, 0, 0, DirectX.espFont);
+	/*for (int i = 8; i < 120; i++)
+	{
+		Vec3 vec3Bone = hack->GetBonePos(ent, i);
+		Vec2 screenBone;
+		if (hack->WorldToScreen(vec3Bone, screenBone))
+		{
+			char text[3];
+			snprintf(text, sizeof(text), "%d", i);
+			DrawText(text, screenBone.x, screenBone.y, D3DCOLOR_ARGB(255, 255, 0, 0));
+		}
+	}*/
+
+	// head
+	drawBone(hack->GetBonePos(ent, 8), hack->GetBonePos(ent, 10), color);
+	drawBone(hack->GetBonePos(ent, 8), hack->GetBonePos(ent, 39), color);
+	
+	// left arm
+	drawBone(hack->GetBonePos(ent, 10), hack->GetBonePos(ent, 11), color);
+	drawBone(hack->GetBonePos(ent, 11), hack->GetBonePos(ent, 12), color);
+	drawBone(hack->GetBonePos(ent, 12), hack->GetBonePos(ent, 13), color);
+	
+	// right arm
+	drawBone(hack->GetBonePos(ent, 10), hack->GetBonePos(ent, 40), color);
+	drawBone(hack->GetBonePos(ent, 40), hack->GetBonePos(ent, 41), color);
+	drawBone(hack->GetBonePos(ent, 41), hack->GetBonePos(ent, 42), color);
+	
+	// torso
+	drawBone(hack->GetBonePos(ent, 10), hack->GetBonePos(ent, 68), color);
+	drawBone(hack->GetBonePos(ent, 68), hack->GetBonePos(ent, 81), color);
+	
+	// palvis
+	drawBone(hack->GetBonePos(ent, 81), hack->GetBonePos(ent, 72), color);
+	
+	// right leg
+	drawBone(hack->GetBonePos(ent, 81), hack->GetBonePos(ent, 86), color);
+	drawBone(hack->GetBonePos(ent, 86), hack->GetBonePos(ent, 87), color);
+	drawBone(hack->GetBonePos(ent, 87), hack->GetBonePos(ent, 82), color);
+	drawBone(hack->GetBonePos(ent, 82), hack->GetBonePos(ent, 83), color);
+	
+	// left leg
+	drawBone(hack->GetBonePos(ent, 72), hack->GetBonePos(ent, 77), color);
+	drawBone(hack->GetBonePos(ent, 77), hack->GetBonePos(ent, 78), color);
+	drawBone(hack->GetBonePos(ent, 78), hack->GetBonePos(ent, 73), color);
+	drawBone(hack->GetBonePos(ent, 73), hack->GetBonePos(ent, 74), color);
 }
 
 void DrawText(const char* text, float x, float y, D3DCOLOR color) {
