@@ -90,8 +90,15 @@ private:
 		return p;
 	}
 
-	void DoWork(std::shared_ptr<Vec3> target) {
+	//void DoWork(std::shared_ptr<Vec3> target) {
+	void DoWork() {
 		std::cout << "[!!!] New Thread Started\n";
+
+		std::shared_ptr<Vec3> target;
+		{
+			std::lock_guard<std::mutex> lock(mtx);
+			target = globalPosPtr;
+		}
 
 		static uintptr_t engineModule = (uintptr_t)GetModuleHandle(L"engine.dll");
 		//static Vec3* viewAngles = (Vec3*)(*(uint32_t*)(engineModule + hazedumper::signatures::dwClientState) + hazedumper::signatures::dwClientState_ViewAngles);
@@ -126,8 +133,16 @@ private:
 			random_number = dist(gen);
 		} while (random_number == 0);
 
+
+		/*POINT cursorsLoc;
+		GetCursorPos(&cursorsLoc);
+		Vec2 deltaVecDistance = { pitch - cursorsLoc.x, yaw - cursorsLoc.y};
+		float deltaVecDistanceLength = sqrt(deltaVecDistance.x * deltaVecDistance.x + deltaVecDistance.y * deltaVecDistance.y);
+		std::cout << "Distance to enemy head: " << deltaVecDistanceLength << "\n";*/
+
+		// maybe just check the distance and not the yaw and pitch for LERP ???
 		if (pitch >= -25 && pitch <= 25 && yaw >= -40 && yaw <= 40) {
-			std::cout << "\t\tLERP !!!!!\n";
+			std::cout << "\t\t[LERP] Linear interprotation !!!!!\n";
 
 			constexpr int steps{ 50 }; // Number of steps for interpolation
 			constexpr int delayMs{ 10 }; // Delay in milliseconds between steps
@@ -151,8 +166,8 @@ private:
 		}
 		else if (pitch >= -89 && pitch <= 89 && yaw >= -180 && yaw <= 180)
 		{
-			constexpr int steps{ 50 }; // Number of steps for interpolation
-			constexpr int delayMs{ 10 }; // Delay in milliseconds between steps
+			constexpr int steps{ 100 }; // Number of steps for interpolation
+			constexpr int delayMs{ 3 }; // Delay in milliseconds between steps
 
 			const POINT startingPoint{viewAngles->x, viewAngles->y};
 			const POINT destinationPoint{ pitch, yaw };
@@ -195,13 +210,13 @@ public:
 		return &m_vecViewOffset;
 	}
 
-	void AimAt(std::shared_ptr<Vec3> target) {
+	void AimAt() {
 		//DoWork(target);
 		//while (existsWorkingThread.load()) {}
 		if (existsWorkingThread.load() == false)
 		{
 			existsWorkingThread.store(true);
-			std::thread worker([this, target] { DoWork(target); });
+			std::thread worker([this] { DoWork(); });
 			worker.detach(); // Optionally detach the new threaded task if you're sure it will finish safely
 		}
 	}

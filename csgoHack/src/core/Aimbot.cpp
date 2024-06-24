@@ -1,6 +1,7 @@
 #include <thread>
 
 #include "aimbot.h"
+//#include "concurency.h"
 
 #include "../valve/csgosdk.h"
 #include "../valve/csgoVector.h"
@@ -87,8 +88,13 @@ void Aimbot() {
 	if (closestEnemy)
 	{
 		enemyInSight.store(true);
-		const auto temp = std::make_shared<Vec3>(hack->GetBonePos(closestEnemy, 8));
-		hack->localEnt->AimAt(temp);
+		//const auto temp = std::make_shared<Vec3>(hack->GetBonePos(closestEnemy, 8));
+		Vec3 temp = hack->GetBonePos(closestEnemy, 8);
+		{
+			std::lock_guard<std::mutex> lock(mtx);
+			*globalPosPtr = temp;
+		}
+		hack->localEnt->AimAt();
 	}
 	else {
 		enemyInSight.store(false);

@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include <atomic>
+#include <mutex>
 
 static std::atomic<bool> existsWorkingThread(false);
 static std::atomic<bool> enemyInSight(false);
@@ -15,6 +16,12 @@ static std::atomic<bool> enemyInSight(false);
 
 #include "dx.h"
 #include "hook.h"
+
+struct Vector3;
+
+inline std::shared_ptr<Vector3> globalPosPtr;
+inline std::mutex mtx;
+
 #include "hack.h"
 #include "drawing.h"
 

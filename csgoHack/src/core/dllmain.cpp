@@ -1,4 +1,5 @@
 #include "includes.h"
+//#include "concurency.h"
 #include <sstream>
 #include <string.h>
 
@@ -134,6 +135,8 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 }
 
 DWORD WINAPI HackThread(HMODULE hModule) {
+	globalPosPtr = std::make_shared<Vec3>();
+
 	//Create Debugging Console
 	AllocConsole();
 	FILE* f;
