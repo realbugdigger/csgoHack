@@ -250,6 +250,7 @@ public:
 
 	uintptr_t engine;
 	uintptr_t client;
+	uintptr_t server;
 
 	Ent* localEnt;
 	EntList* entList;

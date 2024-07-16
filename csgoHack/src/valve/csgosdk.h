@@ -37,3 +37,4 @@ class SDKEntList
 public:
     SDKEntListObj entListObjs[32]; //0x0000
 }; //Size: 0x0200
+

@@ -1,7 +1,11 @@
 #include "includes.h"
+#include "../valve/serverCom.h"
+#include "../valve/weapons.h"
 //#include "concurency.h"
 #include <sstream>
 #include <string.h>
+#include <iomanip>
+#include <cstdint>
 
 // data
 void* d3d9Device[119];
@@ -9,6 +13,24 @@ BYTE EndSceneBytes[7]{ 0 };
 tEndScene oEndScene = nullptr;
 extern LPDIRECT3DDEVICE9 pDevice = nullptr;
 Hack* hack;
+
+// capture an individual interface by name & module
+template <typename Interface>
+Interface* Capture(const char* moduleName, const char* interfaceName) noexcept
+{
+	const HINSTANCE handle = GetModuleHandleA(moduleName);
+
+	if (!handle)
+		return nullptr;
+
+	// get the exported Createinterface function
+	using CreateInterfaceFn = Interface * (__cdecl*)(const char*, int*);
+	const CreateInterfaceFn createInterface =
+		reinterpret_cast<CreateInterfaceFn>(GetProcAddress(handle, "CreateInterface"));
+
+	// return the interface pointer by calling the function
+	return createInterface(interfaceName, nullptr);
+}
 
 // hook function
 void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
@@ -109,6 +131,52 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 				}
 			}
 		}
+
+
+		//IPlayerInfoManager* playerinfomanager = Capture<IPlayerInfoManager>("server.dll", "PlayerInfoManager002");
+		//std::cout << "\t player info manager: " << playerinfomanager << "\n\n";
+		//IVEngineServer* engine = Capture<IVEngineServer>("engine.dll", "VEngineServer023");
+		//std::cout << "\t VEngineServer023: " << engine << "\n\n";
+		//engine->IsInternalBuild();
+		//if (playerinfomanager)
+		//{
+		//	std::cout << "\t TESTING... \n\n";
+		//	//engine->GetGameDir();
+		//	std::cout << "Entity count in game : " << engine->GetEntityCount() << std::endl;
+		//	edict_t* edict = engine->PEntityOfEntIndex(i);
+		//	edict_t* edict4 = engine->PEntityOfEntIndex(3);
+		//	edict_t* edict7 = engine->PEntityOfEntIndex(6);
+		//	edict_t* edict9 = engine->PEntityOfEntIndex(8);
+		//	std::cout << "\t edict: " << edict << "\n\n";
+		//	std::cout << "\t edict: " << edict4 << "\n\n";
+		//	std::cout << "\t edict: " << edict7 << "\n\n";
+		//	std::cout << "\t edict: " << edict9 << "\n\n";
+		//	std::cout << "\t TESTING 2... \n\n";
+		//	IPlayerInfo* player = playerinfomanager->GetPlayerInfo(edict); // For each player, retrieve player object
+		//	std::cout << "\t TESTING 3... \n\n";
+
+		//	// Access other data in loop as desired
+		//	std::cout << "[*] Player name: " << player->GetName() << std::endl;
+		//	std::cout << "[*] Used weapon: " << player->GetWeaponName() << std::endl;
+		//}
+
+		// Read the name this way !!!
+		/*uintptr_t clientState = *(uintptr_t*)(hack->engine + 0x59F19C);
+		uintptr_t user_info_table = *(uintptr_t*)(clientState + 0x52C0);
+		uintptr_t x = *(uintptr_t*)((*(uintptr_t*)(user_info_table + 0x40))+0xC);
+		player_info_t p = *(player_info_t*)(*(uintptr_t*)(x + 0x28 + 0x34 * (i - 1)));
+		std::cout << p.name << std::endl;*/
+
+
+
+		// Player current weapon
+		uintptr_t currWeaponAddress = (uintptr_t)curEnt + 0x2F08;
+		unsigned int weaponId = *(int*)currWeaponAddress;
+		unsigned int currWpnId = weaponId & 0xfff;
+		uintptr_t iBase = *(uintptr_t*)(hack->client + 0x4E051DC + (currWpnId - 1) * 0x10);
+		uintptr_t weaponIdLocation = iBase + 0x2FBA;
+		int id = *(short*)(iBase + 0x2FBA);
+		std::cout << "Current weapon is " << getWeapon(id) << std::endl;
 	}
 
 	// crosshair
@@ -143,9 +211,9 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	globalPosPtr = std::make_shared<Vec3>();
 
 	//Create Debugging Console
-	//AllocConsole();
-	//FILE* f;
-	//freopen_s(&f, "CONOUT$", "w", stdout);
+	AllocConsole();
+	FILE* f;
+	freopen_s(&f, "CONOUT$", "w", stdout);
 
 	std::cout << "[*] Debugging Console Started\n";
 
@@ -171,8 +239,8 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	// unhook
 	Patch((BYTE*)d3d9Device[42], EndSceneBytes, 7);
 
-	//fclose(f);
-	//FreeConsole();
+	fclose(f);
+	FreeConsole();
 
 	// uninject
 	FreeLibraryAndExitThread(hModule, 0);

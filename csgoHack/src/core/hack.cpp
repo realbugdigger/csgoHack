@@ -7,6 +7,7 @@ Hack::~Hack() {
 
 void Hack::Init() {
 	client = (uintptr_t)GetModuleHandle(L"client.dll");
+	server = (uintptr_t)GetModuleHandle(L"server.dll");
 	engine = (uintptr_t)GetModuleHandle(L"engine.dll");
 
 	entList = (EntList*)(client + dwEntityList);
