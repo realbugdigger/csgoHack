@@ -61,6 +61,8 @@ public:
 		DEFINE_MEMBER_N(Vec3, m_vecViewOffset, 0x108);
 		// m_fFlags
 		DEFINE_MEMBER_N(int, m_fFlags, 0x104);
+		// veclocity
+		DEFINE_MEMBER_N(Vec3, m_vecVelocity, 0x114);
 		// vecOrigin
 		DEFINE_MEMBER_N(Vec3, vecOrigin, 0x138);
 		// m_bSpotted
@@ -210,6 +212,17 @@ public:
 		return &m_vecViewOffset;
 	}
 
+	Vec3* GetVelocity() {
+		//return (Vec3*)(*(uintptr_t*)this + hazedumper::netvars::m_vecViewOffset);
+		//return (Vec3*)(*(uintptr_t*)this + 0x12C); // sta je view offset
+		return &m_vecVelocity;
+	}
+
+	Vec* GetEyePosition() {
+		Vec* result = new Vec(vecOrigin + m_vecViewOffset);
+		return result;
+	}
+
 	void AimAt() {
 		//DoWork(target);
 		//while (existsWorkingThread.load()) {}
@@ -284,6 +297,7 @@ public:
 		bool aimbot = false;
 		bool triggerbot = false;
 		bool boneEsp = false;
+		bool nadePrediction = false;
 	} settings;
 
 	struct Buttons {
@@ -296,6 +310,7 @@ public:
 		DWORD aimbotBtn = VK_NUMPAD6;
 		DWORD triggerbotBtn = VK_NUMPAD7;
 		DWORD boneEspBtn = VK_NUMPAD8;
+		DWORD nadePredictBtn = VK_NUMPAD9;
 	} button;
 
 	struct Colors {

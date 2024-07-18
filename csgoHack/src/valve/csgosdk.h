@@ -7,12 +7,6 @@
 #define MAKE_PAD(size) STR_MERGE(_pad, __COUNTER__)[size]
 #define DEFINE_MEMBER_N(type, name, offset) struct {unsigned char MAKE_PAD(offset); type name;}
 
-typedef void* (__cdecl* tCreateInterface)(const char* name, int* pReturnCode);
-
-void* GetInterface(tCreateInterface fn, const char* name)
-{
-    return (fn)(name, 0);
-}
 
 class SDKEnt
 {

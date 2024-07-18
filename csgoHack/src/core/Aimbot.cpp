@@ -13,6 +13,14 @@ uintptr_t clientdll = (uintptr_t)GetModuleHandle(L"client.dll");
 uintptr_t enginedll = (uintptr_t)GetModuleHandle(L"engine.dll");
 
 tTraceRay TraceRay;
+
+typedef void* (__cdecl* tCreateInterface)(const char* name, int* pReturnCode);
+
+void* GetInterface(tCreateInterface fn, const char* name)
+{
+	return (fn)(name, 0);
+}
+
 tCreateInterface CreateInterface = (tCreateInterface)GetProcAddress((HMODULE)enginedll, "CreateInterface");
 
 IEngineTrace* EngineTrace = (IEngineTrace*)GetInterface(CreateInterface, "EngineTraceClient004");

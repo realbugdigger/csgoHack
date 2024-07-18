@@ -6,6 +6,9 @@
 #include <string.h>
 #include <iomanip>
 #include <cstdint>
+#include "../valve/csgotrace.h"
+
+static double M_PI = 3.14159265358;
 
 // data
 void* d3d9Device[119];
@@ -14,23 +17,225 @@ tEndScene oEndScene = nullptr;
 extern LPDIRECT3DDEVICE9 pDevice = nullptr;
 Hack* hack;
 
+//IEngineTrace* EngineTrace_2nd = (IEngineTrace*)GetInterface(CreateInterface, "EngineTraceClient004");
+
 // capture an individual interface by name & module
-template <typename Interface>
-Interface* Capture(const char* moduleName, const char* interfaceName) noexcept
-{
-	const HINSTANCE handle = GetModuleHandleA(moduleName);
+//template <typename Interface>
+//Interface* Capture(const char* moduleName, const char* interfaceName) noexcept
+//{
+//	const HINSTANCE handle = GetModuleHandleA(moduleName);
+//
+//	if (!handle)
+//		return nullptr;
+//
+//	// get the exported Createinterface function
+//	using CreateInterfaceFn = Interface * (__cdecl*)(const char*, int*);
+//	const CreateInterfaceFn createInterface =
+//		reinterpret_cast<CreateInterfaceFn>(GetProcAddress(handle, "CreateInterface"));
+//
+//	// return the interface pointer by calling the function
+//	return createInterface(interfaceName, nullptr);
+//}
 
-	if (!handle)
-		return nullptr;
+//IEngineTrace* EngineTrace_2nd = Capture<IEngineTrace>("engine.dll", "VEngineServer023");
 
-	// get the exported Createinterface function
-	using CreateInterfaceFn = Interface * (__cdecl*)(const char*, int*);
-	const CreateInterfaceFn createInterface =
-		reinterpret_cast<CreateInterfaceFn>(GetProcAddress(handle, "CreateInterface"));
+extern IEngineTrace* EngineTrace;
 
-	// return the interface pointer by calling the function
-	return createInterface(interfaceName, nullptr);
+static SDKVec3 Vec2SDKVec_copy(Vector3 vec3) {
+	return SDKVec3(vec3.x, vec3.y, vec3.z);
 }
+
+static Vec3 SDKVec3_2_Vec3(SDKVec3 sdkVec3) {
+	return Vec3(sdkVec3.x, sdkVec3.y, sdkVec3.z);
+}
+
+void AngleVectors2(const Vector3& angles, Vector3* forward) {
+	float sp, sy, cp, cy;
+
+	// Here, we assume 'angles' are given in degrees, and we convert them to radians.
+	sy = sin(angles.y * M_PI / 180.f);
+	cy = cos(angles.y * M_PI / 180.f);
+
+	sp = sin(angles.x * M_PI / 180.f);
+	cp = cos(angles.x * M_PI / 180.f);
+
+	forward->x = cp * cy;
+	forward->y = cp * sy;
+	forward->z = -sp;
+}
+
+float DotProduct(const Vector3& v1, const Vector3& v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+static void PredictGrenade(Ent* ent)
+{
+	const float TIMEALIVE = 5.f;
+	const float GRENADE_COEFFICIENT_OF_RESTITUTION = 0.4f;
+
+	float fStep = 0.1f;
+	float fGravity = 800.0f / 8.f;
+
+	Vector3 vPos, vThrow, vThrow2;
+	Vector3 vStart;
+
+	int iCollisions = 0;
+
+	Vector3* vViewAngles = (Vec3*)(*(uintptr_t*)(hack->engine + 0x59F19C) + 0x4D90);
+
+	vThrow.x = vViewAngles->x;
+	vThrow.y = vViewAngles->y;
+	vThrow.z = vViewAngles->z;
+
+	if (vThrow.x < 0)
+		vThrow.x = -10 + vThrow.x * ((90 - 10) / 90.0);
+	else
+		vThrow.x = -10 + vThrow.x * ((90 + 10) / 90.0);
+
+	float fVel = (90 - vThrow.x) * 4;
+	if (fVel > 500)
+		fVel = 500;
+
+	AngleVectors2(vThrow, &vThrow2);
+
+	Vector3* vEye = ent->GetEyePosition();
+	vStart.x = vEye->x + vThrow2.x * 16;
+	vStart.y = vEye->y + vThrow2.y * 16;
+	vStart.z = vEye->z + vThrow2.z * 16;
+
+	vThrow2.x = (vThrow2.x * fVel) + ent->GetVelocity()->x;
+	vThrow2.y = (vThrow2.y * fVel) + ent->GetVelocity()->y;
+	vThrow2.z = (vThrow2.z * fVel) + ent->GetVelocity()->z;
+
+	for (float fTime = 0.0f; fTime < TIMEALIVE; fTime += fStep)
+	{
+		vPos = vStart + vThrow2 * fStep;
+
+		Ray_t ray;
+		CGameTrace tr;
+		CTraceFilter loc;
+		loc.pSkip = ent;
+
+		ray.Init(Vec2SDKVec_copy(vStart), Vec2SDKVec_copy(vPos));
+		EngineTrace->TraceRay(ray, CONTENTS_SOLID, &loc, &tr);
+		D3DCOLOR green = D3DCOLOR_ARGB(255, 0, 255, 0);
+		if (tr.DidHit())
+		{
+			float anglez = DotProduct(Vector3(0, 0, 1), SDKVec3_2_Vec3(tr.plane.normal));
+			float invanglez = DotProduct(Vector3(0, 0, -1), SDKVec3_2_Vec3(tr.plane.normal));
+			float angley = DotProduct(Vector3(0, 1, 0), SDKVec3_2_Vec3(tr.plane.normal));
+			float invangley = DotProduct(Vector3(0, -1, 0), SDKVec3_2_Vec3(tr.plane.normal));
+			float anglex = DotProduct(Vector3(1, 0, 0), SDKVec3_2_Vec3(tr.plane.normal));
+			float invanglex = DotProduct(Vector3(3 - 1, 0, 0), SDKVec3_2_Vec3(tr.plane.normal));
+			float scale = tr.endpos.DistTo(Vec2SDKVec_copy(*ent->GetOrigin())) / 60;
+			D3DCOLOR blue = D3DCOLOR_ARGB(255, 0, 0, 255);
+			if (anglez > 0.5)
+			{
+				tr.endpos.z += 1;
+				Vector3 startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(-scale, 0, 0);
+				Vector3 endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(scale, 0, 0);
+				Vec2 outStart, outEnd;
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+
+				startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, -scale, 0);
+				endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, scale, 0);
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+			}
+			else if (invanglez > 0.5)
+			{
+				tr.endpos.z += 1;
+				Vector3 startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(-scale, 0, 0);
+				Vector3 endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(scale, 0, 0);
+				Vec2 outStart, outEnd;
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+
+				startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, -scale, 0);
+				endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, scale, 0);
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+			}
+			else if (angley > 0.5)
+			{
+				tr.endpos.y += 1;
+				Vector3 startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, -scale);
+				Vector3 endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, scale);
+				Vec2 outStart, outEnd;
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+
+				startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(-scale, 0, 0);
+				endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(scale, 0, 0);
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+			}
+			else if (invangley > 0.5)
+			{
+				tr.endpos.y += 1;
+				Vector3 startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, -scale);
+				Vector3 endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, scale);
+				Vec2 outStart, outEnd;
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+
+				startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(-scale, 0, 0);
+				endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(scale, 0, 0);
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+			}
+			else if (anglex > 0.5)
+			{
+				tr.endpos.x += 1;
+				Vector3 startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, -scale, 0);
+				Vector3 endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, scale, 0);
+				Vec2 outStart, outEnd;
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+
+				startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, -scale);
+				endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, scale);
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+			}
+			else if (invanglex > 0.5)
+			{
+				tr.endpos.x += 1;
+				Vector3 startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, -scale, 0);
+				Vector3 endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, scale, 0);
+				Vec2 outStart, outEnd;
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+
+				startPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, -scale);
+				endPos = SDKVec3_2_Vec3(tr.endpos) + Vector3(0, 0, scale);
+				if (hack->WorldToScreen(startPos, outStart) && hack->WorldToScreen(endPos, outEnd))
+					DrawLine(outStart.x, outStart.y, outEnd.x, outEnd.y, 2, blue);
+			}
+
+			vThrow2 = SDKVec3_2_Vec3(tr.plane.normal) * -2.0f * DotProduct(vThrow2, SDKVec3_2_Vec3(tr.plane.normal)) + vThrow2;
+			vThrow2 *= GRENADE_COEFFICIENT_OF_RESTITUTION;
+
+			iCollisions++;
+			if (iCollisions > 2)
+				break;
+
+			vPos = vStart + vThrow2 * tr.fraction * fStep;
+			fTime += (fStep * (1 - tr.fraction));
+		}
+
+		Vec2 vOutStart, vOutEnd;
+
+		if (hack->WorldToScreen(vStart, vOutStart), hack->WorldToScreen(vPos, vOutEnd))
+			DrawLine(vOutStart.x, vOutStart.y, vOutEnd.x, vOutEnd.y, 2, green);
+
+		vStart = vPos;
+		vThrow2.z -= fGravity * tr.fraction * fStep;
+	}
+}
+
+
 
 // hook function
 void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
@@ -56,7 +261,8 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 		DrawText("Aimbot			[NUMPAD 6]", menuOffX, menuOffY + 6 * 12, hack->settings.aimbot ? enabled : disabled);
 		DrawText("Triggerbot		[NUMPAD 7]", menuOffX, menuOffY + 7 * 12, hack->settings.triggerbot ? enabled : disabled);
 		DrawText("Bone Esp			[NUMPAD 8]", menuOffX, menuOffY + 8 * 12, hack->settings.boneEsp ? enabled : disabled);
-		DrawText("Hide Menu			(INS)",		 menuOffX, menuOffY + 9 * 12, D3DCOLOR_ARGB(255, 255, 255, 255));
+		DrawText("Nade Prediction	[NUMPAD 9]", menuOffX, menuOffY + 9 * 12, hack->settings.nadePrediction ? enabled : disabled);
+		DrawText("Hide Menu			(INS)",		 menuOffX, menuOffY + 10 * 12, D3DCOLOR_ARGB(255, 255, 255, 255));
 	}
 
 
@@ -170,13 +376,13 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 
 
 		// Player current weapon
-		uintptr_t currWeaponAddress = (uintptr_t)curEnt + 0x2F08;
+		/*uintptr_t currWeaponAddress = (uintptr_t)curEnt + 0x2F08;
 		unsigned int weaponId = *(int*)currWeaponAddress;
 		unsigned int currWpnId = weaponId & 0xfff;
 		uintptr_t iBase = *(uintptr_t*)(hack->client + 0x4E051DC + (currWpnId - 1) * 0x10);
 		uintptr_t weaponIdLocation = iBase + 0x2FBA;
 		int id = *(short*)(iBase + 0x2FBA);
-		std::cout << "Current weapon is " << getWeapon(id) << std::endl;
+		std::cout << "Current weapon is " << getWeapon(id) << std::endl;*/
 	}
 
 	// crosshair
@@ -195,6 +401,20 @@ void APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 		DrawLine(t, b, 2, hack->color.crosshair);
 	}
 
+	if (hack->settings.nadePrediction) {
+		// Player current weapon
+		uintptr_t currWeaponAddress = (uintptr_t)hack->localEnt + 0x2F08;
+		unsigned int weaponId = *(int*)currWeaponAddress;
+		unsigned int currWpnId = weaponId & 0xfff;
+		uintptr_t iBase = *(uintptr_t*)(hack->client + 0x4E051DC + (currWpnId - 1) * 0x10);
+		uintptr_t weaponIdLocation = iBase + 0x2FBA;
+		int id = *(short*)(iBase + 0x2FBA);
+		if (getWeapon(id) == "Grenade")
+		{
+			PredictGrenade(hack->localEnt);
+		}
+	}
+
 	if (hack->settings.aimbot) {
 		Aimbot();
 	}
@@ -211,11 +431,11 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	globalPosPtr = std::make_shared<Vec3>();
 
 	//Create Debugging Console
-	AllocConsole();
+	/*AllocConsole();
 	FILE* f;
 	freopen_s(&f, "CONOUT$", "w", stdout);
 
-	std::cout << "[*] Debugging Console Started\n";
+	std::cout << "[*] Debugging Console Started\n";*/
 
 	// hook
 	if (GetD3D9Device(d3d9Device, sizeof(d3d9Device))) {
@@ -239,8 +459,8 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	// unhook
 	Patch((BYTE*)d3d9Device[42], EndSceneBytes, 7);
 
-	fclose(f);
-	FreeConsole();
+	/*fclose(f);
+	FreeConsole();*/
 
 	// uninject
 	FreeLibraryAndExitThread(hModule, 0);

@@ -39,6 +39,8 @@ void Hack::CheckButtons() {
 		settings.triggerbot = !settings.triggerbot;
 	if (GetAsyncKeyState(button.boneEspBtn) & 1)
 		settings.boneEsp = !settings.boneEsp;
+	if (GetAsyncKeyState(button.nadePredictBtn) & 1)
+		settings.nadePrediction = !settings.nadePrediction;
 }
 
 bool Hack::CheckValidEnt(Ent* ent) {
