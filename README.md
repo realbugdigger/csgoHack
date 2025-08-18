@@ -13,3 +13,7 @@
 - `Aimbot [Numpad 6]`
 - `Triggerbot [Numpad 7]` shoot enemy automatically when he crosses crosshair
 - `End` to eject a dll
+
+***
+
+discord info: sriroyal
